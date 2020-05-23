@@ -1,0 +1,465 @@
+<html>
+<head>
+	<title>Главная</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<link rel="stylesheet"type="text/css"href="style.css">
+	<script src="script.js"></script>
+</head>
+<body>	
+	<div class="blok-menu">
+		<div class="logo">
+			<img src="image/logo.png" width="150" height="115">
+		</div>
+		<div class="nazv">
+			<li>Прокопьевский краеведческий музей</li>
+		</div>
+		<ul class="menu">
+			<li><a href="index.html">Главная</a></li>
+			<li><a href="ist.html">История</a></li>
+			<li><a href="gal.html">Галерея</a></li>
+		</ul>
+	</div>
+	<div class="wrapper">
+<div class="slider">
+    <div class="slider__wrapper">
+      <div class="slider__item">
+        <div style="height: 250px; background: #444;"><img src="image/slide1.jpg" ></div>
+      </div>
+      <div class="slider__item">
+        <div style="height: 250px; background: #444;"><img src="image/slide2.jpg"></div>
+      </div>
+      <div class="slider__item">
+        <div style="height: 250px; background: #444;"><img src="image/logo.png" width="55%" height="100%"></div>
+      </div>
+      <div class="slider__item">
+        <div style="height: 250px; background: #444;">Прокопьевский краеведческий музей</div>
+      </div>
+    </div>
+    <a class="slider__control slider__control_left" href="#" role="button"></a>
+    <a class="slider__control slider__control_right" href="#" role="button"></a>
+  </div>
+
+  <script>
+    'use strict';
+    var multiItemSlider = (function () {
+
+      function _isElementVisible(element) {
+        var rect = element.getBoundingClientRect(),
+          vWidth = window.innerWidth || doc.documentElement.clientWidth,
+          vHeight = window.innerHeight || doc.documentElement.clientHeight,
+          elemFromPoint = function (x, y) { return document.elementFromPoint(x, y) };
+        if (rect.right < 0 || rect.bottom < 0
+          || rect.left > vWidth || rect.top > vHeight)
+          return false;
+        return (
+          element.contains(elemFromPoint(rect.left, rect.top))
+          || element.contains(elemFromPoint(rect.right, rect.top))
+          || element.contains(elemFromPoint(rect.right, rect.bottom))
+          || element.contains(elemFromPoint(rect.left, rect.bottom))
+        );
+      }
+
+      return function (selector, config) {
+        var
+          _mainElement = document.querySelector(selector), 
+          _sliderWrapper = _mainElement.querySelector('.slider__wrapper'), 
+          _sliderItems = _mainElement.querySelectorAll('.slider__item'), 
+          _sliderControls = _mainElement.querySelectorAll('.slider__control'), 
+          _sliderControlLeft = _mainElement.querySelector('.slider__control_left'), 
+          _sliderControlRight = _mainElement.querySelector('.slider__control_right'), 
+          _wrapperWidth = parseFloat(getComputedStyle(_sliderWrapper).width), 
+          _itemWidth = parseFloat(getComputedStyle(_sliderItems[0]).width),    
+          _positionLeftItem = 0, 
+          _transform = 0, 
+          _step = _itemWidth / _wrapperWidth * 100, 
+          _items = [], 
+          _interval = 0,
+          _html = _mainElement.innerHTML,
+          _states = [
+            { active: false, minWidth: 0, count: 1 },
+            { active: false, minWidth: 980, count: 2 }
+          ],
+          _config = {
+            isCycling: false,
+            direction: 'right', 
+            interval: 5000, 
+            pause: true 
+          };
+
+        for (var key in config) {
+          if (key in _config) {
+            _config[key] = config[key];
+          }
+        }
+
+        
+        _sliderItems.forEach(function (item, index) {
+          _items.push({ item: item, position: index, transform: 0 });
+        });
+
+        var _setActive = function () {
+          var _index = 0;
+          var width = parseFloat(document.body.clientWidth);
+          _states.forEach(function (item, index, arr) {
+            _states[index].active = false;
+            if (width >= _states[index].minWidth)
+              _index = index;
+          });
+          _states[_index].active = true;
+        }
+
+        var _getActive = function () {
+          var _index;
+          _states.forEach(function (item, index, arr) {
+            if (_states[index].active) {
+              _index = index;
+            }
+          });
+          return _index;
+        }
+
+        var position = {
+          getItemMin: function () {
+            var indexItem = 0;
+            _items.forEach(function (item, index) {
+              if (item.position < _items[indexItem].position) {
+                indexItem = index;
+              }
+            });
+            return indexItem;
+          },
+          getItemMax: function () {
+            var indexItem = 0;
+            _items.forEach(function (item, index) {
+              if (item.position > _items[indexItem].position) {
+                indexItem = index;
+              }
+            });
+            return indexItem;
+          },
+          getMin: function () {
+            return _items[position.getItemMin()].position;
+          },
+          getMax: function () {
+            return _items[position.getItemMax()].position;
+          }
+        }
+
+        var _transformItem = function (direction) {
+          var nextItem;
+          if (!_isElementVisible(_mainElement)) {
+            return;
+          }
+          if (direction === 'right') {
+            _positionLeftItem++;
+            if ((_positionLeftItem + _wrapperWidth / _itemWidth - 1) > position.getMax()) {
+              nextItem = position.getItemMin();
+              _items[nextItem].position = position.getMax() + 1;
+              _items[nextItem].transform += _items.length * 100;
+              _items[nextItem].item.style.transform = 'translateX(' + _items[nextItem].transform + '%)';
+            }
+            _transform -= _step;
+          }
+          if (direction === 'left') {
+            _positionLeftItem--;
+            if (_positionLeftItem < position.getMin()) {
+              nextItem = position.getItemMax();
+              _items[nextItem].position = position.getMin() - 1;
+              _items[nextItem].transform -= _items.length * 100;
+              _items[nextItem].item.style.transform = 'translateX(' + _items[nextItem].transform + '%)';
+            }
+            _transform += _step;
+          }
+          _sliderWrapper.style.transform = 'translateX(' + _transform + '%)';
+        }
+
+        var _cycle = function (direction) {
+          if (!_config.isCycling) {
+            return;
+          }
+          _interval = setInterval(function () {
+            _transformItem(direction);
+          }, _config.interval);
+        }
+
+        
+        var _controlClick = function (e) {
+          if (e.target.classList.contains('slider__control')) {
+            e.preventDefault();
+            var direction = e.target.classList.contains('slider__control_right') ? 'right' : 'left';
+            _transformItem(direction);
+            clearInterval(_interval);
+            _cycle(_config.direction);
+          }
+        };
+
+        
+        var _handleVisibilityChange = function () {
+          if (document.visibilityState === "hidden") {
+            clearInterval(_interval);
+          } else {
+            clearInterval(_interval);
+            _cycle(_config.direction);
+          }
+        }
+
+        var _refresh = function () {
+          clearInterval(_interval);
+          _mainElement.innerHTML = _html;
+          _sliderWrapper = _mainElement.querySelector('.slider__wrapper');
+          _sliderItems = _mainElement.querySelectorAll('.slider__item');
+          _sliderControls = _mainElement.querySelectorAll('.slider__control');
+          _sliderControlLeft = _mainElement.querySelector('.slider__control_left');
+          _sliderControlRight = _mainElement.querySelector('.slider__control_right');
+          _wrapperWidth = parseFloat(getComputedStyle(_sliderWrapper).width);
+          _itemWidth = parseFloat(getComputedStyle(_sliderItems[0]).width);
+          _positionLeftItem = 0;
+          _transform = 0;
+          _step = _itemWidth / _wrapperWidth * 100;
+          _items = [];
+          _sliderItems.forEach(function (item, index) {
+            _items.push({ item: item, position: index, transform: 0 });
+          });
+        }
+
+        var _setUpListeners = function () {
+          _mainElement.addEventListener('click', _controlClick);
+          if (_config.pause && _config.isCycling) {
+            _mainElement.addEventListener('mouseenter', function () {
+              clearInterval(_interval);
+            });
+            _mainElement.addEventListener('mouseleave', function () {
+              clearInterval(_interval);
+              _cycle(_config.direction);
+            });
+          }
+          document.addEventListener('visibilitychange', _handleVisibilityChange, false);
+          window.addEventListener('resize', function () {
+            var
+              _index = 0,
+              width = parseFloat(document.body.clientWidth);
+            _states.forEach(function (item, index, arr) {
+              if (width >= _states[index].minWidth)
+                _index = index;
+            });
+            if (_index !== _getActive()) {
+              _setActive();
+              _refresh();
+            }
+          });
+        }
+
+        
+        _setUpListeners();
+        if (document.visibilityState === "visible") {
+          _cycle(_config.direction);
+        }
+        _setActive();
+
+        return {
+          right: function () { 
+            _transformItem('right');
+          },
+          left: function () {
+            _transformItem('left');
+          },
+          stop: function () { 
+            _config.isCycling = false;
+            clearInterval(_interval);
+          },
+          cycle: function () { 
+            _config.isCycling = true;
+            clearInterval(_interval);
+            _cycle();
+          }
+        }
+
+      }
+    }());
+
+    var slider = multiItemSlider('.slider', {
+      isCycling: true
+    })
+
+  </script>
+	<div class="content">
+	<h2>Главная</h2>
+<br><br><br>
+	<div class="blok1">
+	<div class="post-wrap1">
+		<div class="post-item1">
+			<div class="item-content1">
+				<img src="image/n6.png" width="120" height="120" >
+				<h4>21.04.2020</h4>
+				<div class="item-body1">
+					<h3>"Треугольники судьбы". Мысляев Иван Александрович</h3>
+					<p>Продолжаем проект "Треугольники судьбы" и сегодня читаем письма ефрейтора Мысляева Ивана Александровича </p>
+				</div>
+				<div class="item-footer1">
+					<a href="https://youtu.be/FaFAt7Xa2IY" class="link1"><span>Подробнее</span></a>
+				</div>
+			</div>
+		</div>
+		</div>
+	</div>
+<br><br><br>
+
+	</div>
+	
+
+
+
+
+
+
+
+
+<div class="widget">
+  <h4>Меню</h4>
+  	<h3 class="widget-title">Аэроклуб</h3>
+	<ul class="widget-list">
+    <li><a href="">История аэроклуба</a></li>
+	<li><a href="">Персоналии</a></li>
+	<br>
+	<h3 class="widget-title">Экспозиции</h3>
+	<ul class="widget-list">
+    <li><a href="">Экспозиции</a></li>
+	<li><a href="">Выставки</a></li>
+	<br>
+	<h3 class="widget-title">Фонды музея</h3>
+    <li><a href="">Коллекции</a></li>
+	<li><a href="">Экспонаты</a></li>
+	<br>
+	<h3 class="widget-title">Краеведение</h3>
+    <li><a href="">История города</a></li>
+	<li><a href="">Памятные места</a></li>
+	<br>
+	<h3 class="widget-title">Персоналии</h3>
+    <li><a href="">Победители</a></li>
+    <li><a href="">Памяти героев</a></li>
+	<br>
+	<h3 class="widget-title">
+	
+	
+	
+	
+	<div class="dropdown">
+<button onclick="myFunction()" class="dropbtn">Поиск</button>
+  <div id="myDropdown" class="dropdown-content">
+    <input type="text" placeholder="Найти..." id="myInput" onkeyup="filterFunction()">
+    <a href="#">Экспозиции</a>
+    <a href="#">Выставки</a>
+    <a href="#">Коллекции</a>
+    <a href="#">Экспонаты</a>
+    <a href="#">История города</a>
+    <a href="#">Памятные места</a>
+    <a href="#">Победители</a>
+	<a href="#">Памяти героев</a>
+	<a href="#">Главная</a>
+	<a href="#">История</a>
+	<a href="#">Галерея</a>
+	<a href="#">Контакты</a>
+	<a href="#">Партнеры</a>
+	<a href="#">Документы</a>
+	<a href="#">Услуги</a>
+  </div>
+</div>
+	
+	
+	
+	
+	<script>
+function myFunction() {
+    document.getElementById("myDropdown").classList.toggle("show");
+}
+
+function filterFunction() {
+    var input, filter, ul, li, a, i;
+    input = document.getElementById("myInput");
+    filter = input.value.toUpperCase();
+    div = document.getElementById("myDropdown");
+    a = div.getElementsByTagName("a");
+    for (i = 0; i < a.length; i++) {
+        if (a[i].innerHTML.toUpperCase().indexOf(filter) > -1) {
+            a[i].style.display = "";
+        } else {
+            a[i].style.display = "none";
+        }
+    }
+}
+</script>
+	
+	
+	
+	
+	</h3>
+  </ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+<div class="icon-bar">
+  <a href="#" class="facebook"><i class="fa fa-facebook"></i></a>
+  <a href="#" class="twitter"><i class="fa fa-twitter"></i></a>
+  <a href="#" class="youtube"><i class="fa fa-youtube"></i></a>
+</div>
+
+
+
+<div class="pagination">
+  <a href="index.html">&laquo;</a>
+  <a href="index.html">1</a>
+  <a class="active" href="2page.html">2</a>
+  <a href="#">3</a>
+  <a href="#">4</a>
+  <a href="#">5</a>
+  <a href="#">6</a>
+  <a href="#">7</a>
+  <a href="#">8</a>
+  <a href="#">9</a>
+  <a href="#">&raquo;</a>
+</div>
+
+
+
+	</div>
+		<div class="footer">
+		<div class="footerl">
+			<p><a href="index.html">Муниципальное бюджетное учреждение культуры "Прокопьевский городской краеведческий музей". </a> © 2018</p>
+			<p>Все права защищены.</p>
+			</div>
+		<div class="footerr">
+			<p><a href="kon.html">Контакты </a></p>
+			<p><a href="par.html">Партнеры </a></p>
+			<p><a href="doc.html">Документы </a></p>
+			<p><a href="usl.html">Услуги </a></p>
+		</div>
+	</div>
+</body>
+</html>
+
