@@ -129,7 +129,7 @@ body.page-2 {
 	float:left;
 	 min-height: calc(100vh - 20%);
 width:55%;
-background-color: #534d7a;
+background-color: #9e99bf;
 padding:30px;
 
 }
@@ -209,7 +209,7 @@ box-shadow: 0 1px 5px rgba(0, 0, 0, .5), -20px 0 20px -20px rgba(0, 0, 0, .10), 
 }
 .content1 h2
 {
-	text-shadow:0px -4px 1px #a29dc2;
+	text-shadow:0px -4px 1px #9e99bf;
 font: 60px Impact, Charcoal, sans-serif;
 color:#444;
 text-align:center;
@@ -286,13 +286,13 @@ color:#a29dc2;
 
 }
 body {
- background: #534d7a;
+ background: #9e99bf;
  background-size: 100% 100%;
  background-repeat: no-repeat;
  background-attachment: fixed;
 }
 body.page-2 {
- background: #534d7a;
+ background: #9e99bf;
 
  background-size: 100% 100%;
  background-repeat: no-repeat;
@@ -983,7 +983,7 @@ text-indent:20px;
 	bottom: 0;
     height: .125rem;
 	margin: auto;
-	background: #534d7a;
+	background: #9e99bf;
     transform: scaleX(.2);
     transform-origin: left center;
     z-index: 0;
@@ -1169,7 +1169,7 @@ text-indent:20px;
   font-size: 16px;
   padding-left: 15px;
   margin-bottom: 15px;
-  border-left: 2px solid #534d7a;
+  border-left: 2px solid #9e99bf;
 }
 .widget-list {
   padding: 0;
@@ -1469,7 +1469,7 @@ font: 15px Impact, Charcoal, sans-serif;
 
 
 .icon-bar a:hover {
-  background-color: #534d7a;
+  background-color: #9e99bf;
 }
 
 .vk {
